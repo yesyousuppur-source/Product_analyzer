@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Product Analyzer — AI Market Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root{--bg:#0a0a0f;--s1:#10101a;--s2:#13131f;--t:#e8e8f0;--m:#7878a0;--b:#1e1e30;--a:#f5a623;--g:#00d4ff;--ok:#22c55e;--w:#f59e0b;--err:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden}
+.app{max-width:480px;margin:0 auto;padding:20px 16px 40px;position:relative;min-height:100vh}
+.noise{position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.gb{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(0,212,255,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.home{position:relative;z-index:1;padding-top:40px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;border:1px solid rgba(245,166,35,.3);background:rgba(245,166,35,.08);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--a);margin-bottom:20px}
+.badge::before{content:"◆"}
+.title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,14vw,72px);line-height:.95;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,var(--a) 50%,var(--g) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px}
+.sub{font-size:13px;color:var(--m);line-height:1.7;margin-bottom:28px}
+.card{background:var(--s1);border:1px solid var(--b);border-radius:18px;padding:20px;margin-bottom:24px}
+.pwrd{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--ok);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:8px 12px;margin-bottom:16px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;flex-shrink:0}
+.lbl{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:8px}
+.inp{width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--g);border-radius:11px;padding:13px 15px;color:var(--t);font-family:'Sora',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--a)}
+.inp::placeholder{color:rgba(120,120,160,.5)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--b);border-radius:100px;padding:5px 12px;font-size:11px;color:var(--m);cursor:pointer;transition:all .2s;font-family:'Sora',sans-serif}
+.chip:hover{border-color:var(--a);color:var(--a);background:rgba(245,166,35,.06)}
+.btn{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--a),#f97316);color:#000;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .3s;text-transform:uppercase;margin-top:7px;display:flex;align-items:center;justify-content:center;gap:9px}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 25px rgba(245,166,35,.3)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.errmsg{margin-top:12px;padding:10px 13px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:9px;font-size:12px;color:var(--err);text-align:center}
+.plat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;opacity:.35}
+.pt{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.load{position:relative;z-index:1;padding-top:50px;text-align:center}
+.orb{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(245,166,35,.15),rgba(0,212,255,.1));border:1px solid rgba(245,166,35,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:pulse 2s infinite}
+.orbi{font-size:32px;animation:spin 4s linear infinite}
+.lprod{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--a);margin-bottom:6px}
+.lstat{font-size:12px;color:var(--m);margin-bottom:20px}
+.ptrack{width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden;margin-bottom:28px}
+.pfill{height:100%;background:linear-gradient(90deg,var(--a),var(--g));border-radius:10px;transition:width 1s ease}
+.steps{display:flex;flex-direction:column;gap:10px;text-align:left}
+.sr{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:12px;color:var(--m);transition:all .3s}
+.sr.active{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);color:var(--t)}
+.sr.done{color:var(--ok)}
+.si{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.si.active{background:rgba(245,166,35,.15);animation:pulse 1s infinite}
+.si.done{background:rgba(34,197,94,.1);color:var(--ok)}
+.si.pend{background:rgba(255,255,255,.03)}
+.res{position:relative;z-index:1}
+.rh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-top:10px}
+.bk{background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:8px;padding:7px 12px;color:var(--m);font-family:'Sora',sans-serif;font-size:11px;cursor:pointer;flex-shrink:0;transition:all .2s}
+.bk:hover{border-color:var(--a);color:var(--a)}
+.rpn{flex:1;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--a)}
+.rc{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:16px;margin-bottom:12px;animation:fu .4s ease}
+.ct{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.rrow{display:flex;gap:14px;align-items:flex-start}
+.rscore{width:72px;height:72px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;flex-shrink:0}
+.rscore.high{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--ok)}
+.rscore.med{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--w)}
+.rscore.low{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--err)}
+.rlbl{display:block;font-size:8px;letter-spacing:2px;margin-top:2px}
+.rv{font-size:12px;font-weight:700;padding:5px 10px;border-radius:7px;margin-bottom:8px;display:inline-block}
+.vs{background:rgba(34,197,94,.1);color:var(--ok);border:1px solid rgba(34,197,94,.2)}
+.rtxt{font-size:11.5px;color:var(--m);line-height:1.6}
+.vc{background:rgba(245,158,11,.11);color:var(--w);border:1px solid rgba(245,158,11,.22)}
+.va{background:rgba(239,68,68,.11);color:var(--err);border:1px solid rgba(239,68,68,.22)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.sb{background:var(--s2);border-radius:11px;padding:13px 11px;text-align:center;border:1px solid var(--b)}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;margin-bottom:3px}
+.sl{font-size:8.5px;color:var(--m);font-weight:600;letter-spacing:1px;text-transform:uppercase}.st{font-size:9.5px;margin-top:3px}
+.tu{color:var(--ok)}.td{color:var(--err)}
+.ir{margin-top:12px;font-size:10.5px;color:var(--m);padding:9px 11px;background:rgba(255,255,255,.02);border-radius:8px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.pr{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:10px}.pr:last-child{border-bottom:none}
+.pn{width:86px;font-size:11.5px;font-weight:600;color:var(--t);flex-shrink:0}
+.pbw{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:10px;overflow:hidden}
+.pb{height:100%;border-radius:10px;transition:width 1.2s ease}
+.ps{font-family:'JetBrains Mono',monospace;font-size:11.5px;width:32px;text-align:right;flex-shrink:0}
+.ptb{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:100px;flex-shrink:0}
+.hi{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04)}.hi:last-child{border-bottom:none}
+.hn{width:22px;height:22px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,rgba(245,166,35,.14),rgba(0,212,255,.09));border:1px solid rgba(245,166,35,.18);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--g)}
+.ht{font-size:12.5px;line-height:1.6;color:var(--t)}
+.mi{display:flex;gap:11px;padding:11px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.1);border-radius:9px;margin-bottom:9px}.mi:last-child{margin-bottom:0}
+.mic{font-size:15px;flex-shrink:0}.mit{font-size:11.5px;line-height:1.6;color:#fca5a5}
+.ms{margin-bottom:14px}
+.ml{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.mc{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.1);border-radius:9px;padding:13px;font-size:11.5px;line-height:1.72;color:var(--t);font-family:'JetBrains Mono',monospace;white-space:pre-wrap;word-break:break-word}
+.tl{display:flex;flex-wrap:wrap;gap:5px}
+.hsh{font-size:10.5px;padding:4px 9px;border-radius:100px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;font-family:'JetBrains Mono',monospace}
+.ab{width:100%;padding:15px;border-radius:11px;border:1.5px solid var(--g);background:transparent;color:var(--g);font-family:'Sora',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .3s;text-transform:uppercase;margin-top:7px;display:flex;align-items:center;justify-content:center;gap:9px}
+.ab:hover{background:rgba(245,166,35,.07);transform:translateY(-2px)}
+@keyframes fd{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.65;transform:scale(.94)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ✅ FIXED: Same domain URL — ab sahi kaam karega */
+const FN = "/.netlify/functions/analyze";
+
+async function callAI(product) {
+  const prompt = `You are an expert eCommerce analyst for Indian sellers. Analyze product: "${product}". Return ONLY raw JSON no markdown no backtick start { end }: {"productName":"name","category":"cat","overallScore":82,"verdict":"Highly Recommended to Sell","recommendationSummary":"2-3 line India specific","marketDemand":{"score":78,"trend":"Rising","monthlySearches":"2.4L+","seasonality":"Year-round"},"returnRate":{"percentage":"12%","industry":"18%","rating":"Low Risk","reason":"why"},"profitMargin":{"min":"18%","max":"35%","avg":"26%"},"platforms":[{"name":"Amazon","score":88,"status":"Best","tip":"tip"},{"name":"Flipkart","score":82,"status":"Great","tip":"tip"},{"name":"Meesho","score":65,"status":"Good","tip":"tip"},{"name":"Instagram","score":70,"status":"Good","tip":"tip"},{"name":"Myntra","score":55,"status":"Moderate","tip":"tip"},{"name":"Shopify","score":72,"status":"Good","tip":"tip"}],"sellingHooks":["h1","h2","h3","h4","h5","h6"],"commonMistakes":["m1","m2","m3"],"marketing":{"titleTemplate":"seo title","description":"desc","usp":"usp","hashtags":["#t1","#t2","#t3","#t4","#t5","#t6","#t7","#t8"],"targetAudience":"audience","pricingTip":"tip"}}`;
+  const res = await fetch(FN, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2048}})
+  });
+  if(!res.ok) throw new Error("Server error "+res.status);
+  const json = await res.json();
+  let raw = (json?.candidates?.[0]?.content?.parts?.[0]?.text||"").trim();
+  raw = raw.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/\s*```$/i,"").trim();
+  const s=raw.indexOf("{"),e=raw.lastIndexOf("}");
+  if(s===-1||e===-1) throw new Error("Parse error");
+  return JSON.parse(raw.slice(s,e+1));
+}
+const STEPS=[{icon:"🔍",label:"Identifying product & category"},{icon:"📊",label:"Scanning eCommerce platforms"},{icon:"📈",label:"Analysing market demand"},{icon:"💰",label:"Calculating profit margins"},{icon:"🧠",label:"Generating AI insights"},{icon:"📦",label:"Building marketing package"}];
+const EX=["boAt Airdopes 141","Mamaearth Face Wash","Noise ColorFit Pro","Lenskart Eyeglasses","WOW Shampoo"];
+const PL=["Amazon","Flipkart","Meesho","Instagram","Myntra","Shopify"];
+const PC={Amazon:"#FF9900",Flipkart:"#2874f0",Meesho:"#9b2cd7",Instagram:"#e1306c",Shopify:"#96bf48",Myntra:"#FF3F6C"};
+const SC={Best:"var(--ok)",Great:"var(--a)",Good:"var(--g)",Moderate:"var(--w)"};
+const scc=s=>s>=75?"high":s>=50?"med":"low";
+const vcc=v=>{const l=(v||"").toLowerCase();return l.includes("sell")||l.includes("highly")?"vs":l.includes("caution")||l.includes("moderate")?"vc":"va"};
+function Home({q,sq,go,err}){return(<div className="home">
+  <div className="badge">AI Market Intelligence</div>
+  <div className="title">PRODUCT<br/>ANALYZER</div>
+  <p className="sub">AI-powered eCommerce analysis for Indian sellers.<br/>Demand, platforms &amp; complete marketing package.</p>
+  <div className="card">
+    <div className="pwrd"><span className="dot"></span>&nbsp;AI Powered — Free &amp; Live</div>
+    <span className="lbl">Product ka naam likhein</span>
+    <input className="inp" placeholder="e.g. boAt Airdopes 141..." value={q} onChange={e=>sq(e.target.value)} onKeyDown={e=>e.key==="Enter"&&q.trim()&&go()} autoFocus/>
+    <div className="chips">{EX.map(x=><button key={x} className="chip" onClick={()=>sq(x)}>{x}</button>)}</div>
+    <button className="btn" onClick={go} disabled={!q.trim()}><span>⚡</span>Analyze Product</button>
+    {err&&<div className="errmsg">{err}</div>}
+  </div>
+  <div className="plat">{PL.map((p,i)=><React.Fragment key={p}><span className="pt">{p}</span>{i<PL.length-1&&<span style={{color:"var(--b)"}}>·</span>}</React.Fragment>)}</div>
+</div>);}
+function Loading({product,prog,ast,dst,stat}){return(<div className="load">
+  <div className="orb"><div className="orbi">📡</div></div>
+  <div className="lprod">{product}</div><div className="lstat">{stat}</div>
+  <div className="ptrack"><div className="pfill" style={{width:`${prog}%`}}/></div>
+  <div className="steps">{STEPS.map((step,i)=>{const done=dst.includes(i),active=ast===i&&!done;return(<div key={i} className={`sr ${done?"done":active?"active":""}`}><div className={`si ${done?"done":active?"active":"pend"}`}>{done?"✓":active?"⟳":step.icon}</div><span>{step.label}</span></div>);})}</div>
+</div>);}
+function Results({d,back}){
+  const sc=scc(d.overallScore),vc=vcc(d.verdict);
+  return(<div className="res">
+    <div className="rh"><button className="bk" onClick={back}>← Back</button><div className="rpn">{d.productName}</div><div style={{fontSize:9.5,color:"var(--m)",flexShrink:0}}>{d.category}</div></div>
+    <div className="rc"><div className="ct">🏆 Recommendation</div><div className="rrow"><div className={`rscore ${sc}`}>{d.overallScore}<span className="rlbl">SCORE</span></div><div style={{flex:1}}><div className={`rv ${vc}`}>{sc==="high"?"✅":sc==="med"?"⚡":"⚠️"} {d.verdict}</div><div className="rtxt">{d.recommendationSummary}</div></div></div></div>
+    <div className="rc"><div className="ct">📊 Market Overview</div><div className="sg"><div className="sb"><div className="sv" style={{color:"var(--a)"}}>{d.marketDemand?.score}</div><div className="sl">Demand</div><div className={`st ${d.marketDemand?.trend==="Rising"?"tu":"td"}`}>{d.marketDemand?.trend==="Rising"?"↑":"↓"} {d.marketDemand?.trend}</div></div><div className="sb"><div className="sv" style={{color:"var(--ok)"}}>{d.returnRate?.percentage}</div><div className="sl">Return Rate</div><div style={{fontSize:8.5,color:"var(--m)",marginTop:3}}>Ind: {d.returnRate?.industry}</div></div><div className="sb"><div className="sv" style={{color:"var(--g)"}}>{d.profitMargin?.avg}</div><div className="sl">Avg Margin</div><div style={{fontSize:8.5,color:"var(--m)",marginTop:3}}>{d.profitMargin?.min}–{d.profitMargin?.max}</div></div></div><div className="ir"><span>📅 {d.marketDemand?.seasonality}</span><span style={{color:"var(--b)"}}>|</span><span style={{color:d.returnRate?.rating==="Low Risk"?"var(--ok)":"var(--w)"}}>📉 {d.returnRate?.rating}</span><span style={{color:"var(--b)"}}>|</span><span>🔍 {d.marketDemand?.monthlySearches}/mo</span></div></div>
+    <div className="rc"><div className="ct">🛒 Platform-wise Analysis</div>{(d.platforms||[]).map((p,i)=>{const col=PC[p.name]||"#888",sc2=SC[p.status]||"var(--m)";return(<div key={i} className="pr"><div className="pn">{p.name}</div><div className="pbw"><div className="pb" style={{width:`${p.score}%`,background:`linear-gradient(90deg,${col}77,${col})`}}/></div><div className="ps" style={{color:col}}>{p.score}</div><div className="ptb" style={{background:`${sc2}1a`,color:sc2,border:`1px solid ${sc2}33`}}>{p.status}</div></div>);})}</div>
+    <div className="rc"><div className="ct">🎯 6 Selling Hooks</div>{(d.sellingHooks||[]).map((h,i)=><div key={i} className="hi"><div className="hn">{String(i+1).padStart(2,"0")}</div><div className="ht">{h}</div></div>)}</div>
+    <div className="rc"><div className="ct">⚠️ Common Mistakes</div>{(d.commonMistakes||[]).map((m,i)=><div key={i} className="mi"><div className="mic">🚫</div><div className="mit">{m}</div></div>)}</div>
+    <div className="rc"><div className="ct">📦 Marketing Package</div>{[["🏷️ Title",d.marketing?.titleTemplate],["📝 Description",d.marketing?.description],["⭐ USP",d.marketing?.usp],["👥 Audience",d.marketing?.targetAudience],["💸 Pricing",d.marketing?.pricingTip]].map(([l,v])=>(<div key={l} className="ms"><div className="ml">{l}</div><div className="mc">{v}</div></div>))}<div className="ms"><div className="ml"># Hashtags</div><div className="tl">{(d.marketing?.hashtags||[]).map((t,i)=><span key={i} className="hsh">{t}</span>)}</div></div></div>
+    <button className="ab" onClick={back}>⟳ Analyze Another Product</button>
+  </div>);}
+function App(){
+  const [sc,setSc]=useState("home");const [q,sq]=useState("");const [d,sd]=useState(null);
+  const [err,se]=useState("");const [pg,spg]=useState(0);const [as,sas]=useState(0);
+  const [ds,sds]=useState([]);const [st,sst]=useState("");
+  const go=async()=>{
+    if(!q.trim())return;se("");setSc("loading");spg(0);sas(0);sds([]);sst(STEPS[0].label);
+    let c=0;const iv=setInterval(()=>{c++;sds(x=>[...x,c-1]);if(c<STEPS.length){sas(c);sst(STEPS[c].label);spg(Math.round((c/STEPS.length)*80));}else clearInterval(iv);},900);
+    try{const r=await callAI(q.trim());clearInterval(iv);sds([0,1,2,3,4,5]);spg(100);sst("Analysis complete! ✓");setTimeout(()=>{sd(r);setSc("results");},500);}
+    catch(e){clearInterval(iv);se("❌ "+(e.message||"Retry karo"));setSc("home");}
+  };
+  const back=()=>{setSc("home");sd(null);sq("");se("");};
+  return(<div className="app"><div className="noise"/><div className="gb"/>
+    {sc==="home"&&<Home q={q} sq={sq} go={go} err={err}/>}
+    {sc==="loading"&&<Loading product={q} prog={pg} ast={as} dst={ds} stat={st}/>}
+    {sc==="results"&&d&&<Results d={d} back={back}/>}
+  </div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
