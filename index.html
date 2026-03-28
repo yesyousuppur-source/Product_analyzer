@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product Analyzer — AI eCommerce Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#050810;--s:#0d1220;--s2:#131929;--b:#1e2d4a;--g:#f5a623;--g2:#ffc85e;--a:#00d4ff;--a2:#7c3aed;--t:#e8edf5;--m:#6b7fa3;--ok:#10b981;--err:#ef4444;--w:#f59e0b}
+html,body{height:100%}body{background:var(--bg);font-family:'Sora',sans-serif;color:var(--t);min-height:100vh;overflow-x:hidden}
+#root{min-height:100vh}.app{min-height:100vh;position:relative}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+.gb{position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:44px 44px}
+.home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(0,212,255,.07));border:1px solid rgba(245,166,35,.28);border-radius:100px;padding:6px 18px;font-size:10.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:26px;animation:fd .6s ease}
+.badge::before{content:'◆';font-size:7px}
+.title{font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,13vw,100px);line-height:.88;text-align:center;background:linear-gradient(135deg,#fff 0%,#f5a623 48%,#00d4ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;margin-bottom:10px;animation:fd .7s ease .1s both}
+.sub{font-size:13.5px;color:var(--m);text-align:center;max-width:390px;line-height:1.75;margin-bottom:44px;font-weight:300;animation:fd .7s ease .2s both}
+.card{width:100%;max-width:540px;background:linear-gradient(135deg,rgba(13,18,32,.92),rgba(19,25,41,.92));border:1px solid var(--b);border-radius:20px;padding:26px;backdrop-filter:blur(24px);box-shadow:0 0 70px rgba(0,212,255,.05),0 32px 70px rgba(0,0,0,.55);animation:fu .8s ease .3s both}
+.pwrd{display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 14px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.18);border-radius:10px;margin-bottom:18px;font-size:10.5px;color:#6ee7b7;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 7px var(--ok);animation:pulse 2s ease-in-out infinite;display:inline-block;flex-shrink:0}
+.lbl{font-size:10.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:9px;display:block}
+input.inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b);border-radius:12px;padding:15px 19px;font-family:'Sora',sans-serif;font-size:15px;color:var(--t);outline:none;transition:all .3s;margin-bottom:14px}
+input.inp::placeholder{color:var(--m)}
+input.inp:focus{border-color:var(--a);background:rgba(0,212,255,.04);box-shadow:0 0 0 3px rgba(0,212,255,.07)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.chip{font-size:11px;padding:5px 12px;background:rgba(255,255,255,.04);border:1px solid var(--b);border-radius:100px;cursor:pointer;color:var(--m);transition:all .2s;font-family:'Sora',sans-serif}
+.chip:hover{color:var(--g);border-color:var(--g);background:rgba(245,166,35,.05)}
+.btn{width:100%;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--g),var(--g2));color:#0a0a0a;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;letter-spacing:1.5px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(245,166,35,.32)}
+.btn:active{transform:translateY(0)}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.plat{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:32px;flex-wrap:wrap;animation:fu .8s ease .5s both}
+.pt{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--m);opacity:.55}
+.errmsg{color:var(--err);font-size:11.5px;margin-top:11px;text-align:center;padding:11px 13px;background:rgba(239,68,68,.06);border-radius:9px;border:1px solid rgba(239,68,68,.14);line-height:1.6}
+.load{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1}
+.orb{width:114px;height:114px;border-radius:50%;position:relative;margin-bottom:36px}
+.orb::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--g),var(--a),var(--a2),var(--g));animation:spin 2s linear infinite}
+.orb::after{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+.orbi{position:absolute;inset:4px;border-radius:50%;z-index:2;background:radial-gradient(circle,rgba(245,166,35,.18),var(--bg));display:flex;align-items:center;justify-content:center;font-size:34px;animation:pulse 2s ease-in-out infinite}
+.lprod{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--g);letter-spacing:2px;text-align:center;margin-bottom:7px;max-width:310px}
+.lstat{font-size:11.5px;color:var(--m);letter-spacing:1px;text-transform:uppercase;margin-bottom:36px;text-align:center;min-height:17px}
+.ptrack{width:270px;height:3px;background:rgba(255,255,255,.05);border-radius:10px;margin-bottom:32px;overflow:hidden}
+.pfill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--g),var(--a));transition:width .4s ease;box-shadow:0 0 10px rgba(245,166,35,.45)}
+.steps{display:flex;flex-direction:column;gap:9px;width:100%;max-width:330px}
+.sr{display:flex;align-items:center;gap:11px;padding:9px 15px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid transparent;transition:all .4s ease;font-size:11.5px;color:var(--m)}
+.sr.active{border-color:rgba(245,166,35,.28);background:rgba(245,166,35,.055);color:var(--t)}
+.sr.done{border-color:rgba(16,185,129,.18);background:rgba(16,185,129,.04);color:var(--ok)}
+.si{width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.si.pend{background:rgba(255,255,255,.04)}.si.active{background:rgba(245,166,35,.14);color:var(--g);animation:pulse 1s ease-in-out infinite}.si.done{background:rgba(16,185,129,.14);color:var(--ok)}
+.res{min-height:100vh;padding:18px 15px 56px;position:relative;z-index:1;max-width:590px;margin:0 auto}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding:14px 0;border-bottom:1px solid var(--b);gap:8px}
+.bk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--m);background:none;border:none;cursor:pointer;font-family:'Sora',sans-serif;transition:color .2s;flex-shrink:0}.bk:hover{color:var(--t)}
+.rpn{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--g);letter-spacing:1px;text-align:center;flex:1}
+.rc{background:var(--s);border:1px solid var(--b);border-radius:15px;padding:19px;margin-bottom:14px;animation:fu .5s ease both}
+.ct{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--m);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.ct::after{content:'';flex:1;height:1px;background:var(--b)}
+.rrow{display:flex;align-items:flex-start;gap:14px}
+.rscore{width:68px;height:68px;border-radius:50%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;border:3px solid}
+.rscore.high{border-color:var(--ok);color:var(--ok);background:rgba(16,185,129,.07)}
+.rscore.med{border-color:var(--w);color:var(--w);background:rgba(245,158,11,.07)}
+.rscore.low{border-color:var(--err);color:var(--err);background:rgba(239,68,68,.07)}
+.rlbl{font-size:8.5px;font-weight:600;letter-spacing:1px;font-family:'Sora',sans-serif}
+.rtxt{font-size:12.5px;line-height:1.72;color:var(--t)}
+.rv{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 11px;border-radius:100px;margin-bottom:5px}
+.vs{background:rgba(16,185,129,.11);color:var(--ok);border:1px solid rgba(16,185,129,.22)}
+.vc{background:rgba(245,158,11,.11);color:var(--w);border:1px solid rgba(245,158,11,.22)}
+.va{background:rgba(239,68,68,.11);color:var(--err);border:1px solid rgba(239,68,68,.22)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.sb{background:var(--s2);border-radius:11px;padding:13px 11px;text-align:center;border:1px solid var(--b)}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;margin-bottom:3px}
+.sl{font-size:8.5px;color:var(--m);font-weight:600;letter-spacing:1px;text-transform:uppercase}.st{font-size:9.5px;margin-top:3px}
+.tu{color:var(--ok)}.td{color:var(--err)}
+.ir{margin-top:12px;font-size:10.5px;color:var(--m);padding:9px 11px;background:rgba(255,255,255,.02);border-radius:8px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.pr{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:10px}.pr:last-child{border-bottom:none}
+.pn{width:86px;font-size:11.5px;font-weight:600;color:var(--t);flex-shrink:0}
+.pbw{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:10px;overflow:hidden}
+.pb{height:100%;border-radius:10px;transition:width 1.2s ease}
+.ps{font-family:'JetBrains Mono',monospace;font-size:11.5px;width:32px;text-align:right;flex-shrink:0}
+.ptb{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:100px;flex-shrink:0}
+.hi{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04)}.hi:last-child{border-bottom:none}
+.hn{width:22px;height:22px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,rgba(245,166,35,.14),rgba(0,212,255,.09));border:1px solid rgba(245,166,35,.18);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--g)}
+.ht{font-size:12.5px;line-height:1.6;color:var(--t)}
+.mi{display:flex;gap:11px;padding:11px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.1);border-radius:9px;margin-bottom:9px}.mi:last-child{margin-bottom:0}
+.mic{font-size:15px;flex-shrink:0}.mit{font-size:11.5px;line-height:1.6;color:#fca5a5}
+.ms{margin-bottom:14px}
+.ml{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.mc{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.1);border-radius:9px;padding:13px;font-size:11.5px;line-height:1.72;color:var(--t);font-family:'JetBrains Mono',monospace;white-space:pre-wrap;word-break:break-word}
+.tl{display:flex;flex-wrap:wrap;gap:5px}
+.hsh{font-size:10.5px;padding:4px 9px;border-radius:100px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;font-family:'JetBrains Mono',monospace}
+.ab{width:100%;padding:15px;border-radius:11px;border:1.5px solid var(--g);background:transparent;color:var(--g);font-family:'Sora',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .3s;text-transform:uppercase;margin-top:7px;display:flex;align-items:center;justify-content:center;gap:9px}
+.ab:hover{background:rgba(245,166,35,.07);transform:translateY(-2px)}
+@keyframes fd{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.65;transform:scale(.94)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* HTTPS Netlify function URL — works from any domain */
+const FN = "https://profound-tarsier-bb79d6.netlify.app/.netlify/functions/analyze";
+
+async function callAI(product) {
+  const prompt = `You are an expert eCommerce analyst for Indian sellers. Analyze product: "${product}". Return ONLY raw JSON no markdown no backtick start { end }: {"productName":"name","category":"cat","overallScore":82,"verdict":"Highly Recommended to Sell","recommendationSummary":"2-3 line India specific","marketDemand":{"score":78,"trend":"Rising","monthlySearches":"2.4L+","seasonality":"Year-round"},"returnRate":{"percentage":"12%","industry":"18%","rating":"Low Risk","reason":"why"},"profitMargin":{"min":"18%","max":"35%","avg":"26%"},"platforms":[{"name":"Amazon","score":88,"status":"Best","tip":"tip"},{"name":"Flipkart","score":82,"status":"Great","tip":"tip"},{"name":"Meesho","score":65,"status":"Good","tip":"tip"},{"name":"Instagram","score":70,"status":"Good","tip":"tip"},{"name":"Myntra","score":55,"status":"Moderate","tip":"tip"},{"name":"Shopify","score":72,"status":"Good","tip":"tip"}],"sellingHooks":["h1","h2","h3","h4","h5","h6"],"commonMistakes":["m1","m2","m3"],"marketing":{"titleTemplate":"seo title","description":"desc","usp":"usp","hashtags":["#t1","#t2","#t3","#t4","#t5","#t6","#t7","#t8"],"targetAudience":"audience","pricingTip":"tip"}}`;
+
+  const res = await fetch(FN, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2048}})
+  });
+  if(!res.ok) throw new Error("Server error "+res.status);
+  const json = await res.json();
+  let raw = (json?.candidates?.[0]?.content?.parts?.[0]?.text||"").trim();
+  raw = raw.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/\s*```$/i,"").trim();
+  const s=raw.indexOf("{"),e=raw.lastIndexOf("}");
+  if(s===-1||e===-1) throw new Error("Parse error");
+  return JSON.parse(raw.slice(s,e+1));
+}
+
+const STEPS=[{icon:"🔍",label:"Identifying product & category"},{icon:"📊",label:"Scanning eCommerce platforms"},{icon:"📈",label:"Analysing market demand"},{icon:"💰",label:"Calculating profit margins"},{icon:"🧠",label:"Generating AI insights"},{icon:"📦",label:"Building marketing package"}];
+const EX=["boAt Airdopes 141","Mamaearth Face Wash","Noise ColorFit Pro","Lenskart Eyeglasses","WOW Shampoo"];
+const PL=["Amazon","Flipkart","Meesho","Instagram","Myntra","Shopify"];
+const PC={Amazon:"#FF9900",Flipkart:"#2874f0",Meesho:"#9b2cd7",Instagram:"#e1306c",Shopify:"#96bf48",Myntra:"#FF3F6C"};
+const SC={Best:"var(--ok)",Great:"var(--a)",Good:"var(--g)",Moderate:"var(--w)"};
+const scc=s=>s>=75?"high":s>=50?"med":"low";
+const vcc=v=>{const l=(v||"").toLowerCase();return l.includes("sell")||l.includes("highly")?"vs":l.includes("caution")||l.includes("moderate")?"vc":"va"};
+
+function Home({q,sq,go,err}){return(<div className="home">
+  <div className="badge">AI Market Intelligence</div>
+  <div className="title">PRODUCT<br/>ANALYZER</div>
+  <p className="sub">AI-powered eCommerce analysis for Indian sellers.<br/>Demand, platforms &amp; complete marketing package.</p>
+  <div className="card">
+    <div className="pwrd"><span className="dot"></span>&nbsp;AI Powered — Free &amp; Live</div>
+    <span className="lbl">Product ka naam likhein</span>
+    <input className="inp" placeholder="e.g. boAt Airdopes 141..." value={q} onChange={e=>sq(e.target.value)} onKeyDown={e=>e.key==="Enter"&&q.trim()&&go()} autoFocus/>
+    <div className="chips">{EX.map(x=><button key={x} className="chip" onClick={()=>sq(x)}>{x}</button>)}</div>
+    <button className="btn" onClick={go} disabled={!q.trim()}><span>⚡</span>Analyze Product</button>
+    {err&&<div className="errmsg">{err}</div>}
+  </div>
+  <div className="plat">{PL.map((p,i)=><React.Fragment key={p}><span className="pt">{p}</span>{i<PL.length-1&&<span style={{color:"var(--b)"}}>·</span>}</React.Fragment>)}</div>
+</div>);}
+
+function Loading({product,prog,ast,dst,stat}){return(<div className="load">
+  <div className="orb"><div className="orbi">📡</div></div>
+  <div className="lprod">{product}</div><div className="lstat">{stat}</div>
+  <div className="ptrack"><div className="pfill" style={{width:`${prog}%`}}/></div>
+  <div className="steps">{STEPS.map((step,i)=>{const done=dst.includes(i),active=ast===i&&!done;return(<div key={i} className={`sr ${done?"done":active?"active":""}`}><div className={`si ${done?"done":active?"active":"pend"}`}>{done?"✓":active?"⟳":step.icon}</div><span>{step.label}</span></div>);})}</div>
+</div>);}
+
+function Results({d,back}){
+  const sc=scc(d.overallScore),vc=vcc(d.verdict);
+  return(<div className="res">
+    <div className="rh"><button className="bk" onClick={back}>← Back</button><div className="rpn">{d.productName}</div><div style={{fontSize:9.5,color:"var(--m)",flexShrink:0}}>{d.category}</div></div>
+    <div className="rc"><div className="ct">🏆 Recommendation</div><div className="rrow"><div className={`rscore ${sc}`}>{d.overallScore}<span className="rlbl">SCORE</span></div><div style={{flex:1}}><div className={`rv ${vc}`}>{sc==="high"?"✅":sc==="med"?"⚡":"⚠️"} {d.verdict}</div><div className="rtxt">{d.recommendationSummary}</div></div></div></div>
+    <div className="rc"><div className="ct">📊 Market Overview</div><div className="sg"><div className="sb"><div className="sv" style={{color:"var(--a)"}}>{d.marketDemand?.score}</div><div className="sl">Demand</div><div className={`st ${d.marketDemand?.trend==="Rising"?"tu":"td"}`}>{d.marketDemand?.trend==="Rising"?"↑":"↓"} {d.marketDemand?.trend}</div></div><div className="sb"><div className="sv" style={{color:"var(--ok)"}}>{d.returnRate?.percentage}</div><div className="sl">Return Rate</div><div style={{fontSize:8.5,color:"var(--m)",marginTop:3}}>Ind: {d.returnRate?.industry}</div></div><div className="sb"><div className="sv" style={{color:"var(--g)"}}>{d.profitMargin?.avg}</div><div className="sl">Avg Margin</div><div style={{fontSize:8.5,color:"var(--m)",marginTop:3}}>{d.profitMargin?.min}–{d.profitMargin?.max}</div></div></div><div className="ir"><span>📅 {d.marketDemand?.seasonality}</span><span style={{color:"var(--b)"}}>|</span><span style={{color:d.returnRate?.rating==="Low Risk"?"var(--ok)":"var(--w)"}}>📉 {d.returnRate?.rating}</span><span style={{color:"var(--b)"}}>|</span><span>🔍 {d.marketDemand?.monthlySearches}/mo</span></div></div>
+    <div className="rc"><div className="ct">🛒 Platform-wise Analysis</div>{(d.platforms||[]).map((p,i)=>{const col=PC[p.name]||"#888",sc2=SC[p.status]||"var(--m)";return(<div key={i} className="pr"><div className="pn">{p.name}</div><div className="pbw"><div className="pb" style={{width:`${p.score}%`,background:`linear-gradient(90deg,${col}77,${col})`}}/></div><div className="ps" style={{color:col}}>{p.score}</div><div className="ptb" style={{background:`${sc2}1a`,color:sc2,border:`1px solid ${sc2}33`}}>{p.status}</div></div>);})}</div>
+    <div className="rc"><div className="ct">🎯 6 Selling Hooks</div>{(d.sellingHooks||[]).map((h,i)=><div key={i} className="hi"><div className="hn">{String(i+1).padStart(2,"0")}</div><div className="ht">{h}</div></div>)}</div>
+    <div className="rc"><div className="ct">⚠️ Common Mistakes</div>{(d.commonMistakes||[]).map((m,i)=><div key={i} className="mi"><div className="mic">🚫</div><div className="mit">{m}</div></div>)}</div>
+    <div className="rc"><div className="ct">📦 Marketing Package</div>{[["🏷️ Title",d.marketing?.titleTemplate],["📝 Description",d.marketing?.description],["⭐ USP",d.marketing?.usp],["👥 Audience",d.marketing?.targetAudience],["💸 Pricing",d.marketing?.pricingTip]].map(([l,v])=>(<div key={l} className="ms"><div className="ml">{l}</div><div className="mc">{v}</div></div>))}<div className="ms"><div className="ml"># Hashtags</div><div className="tl">{(d.marketing?.hashtags||[]).map((t,i)=><span key={i} className="hsh">{t}</span>)}</div></div></div>
+    <button className="ab" onClick={back}>⟳ Analyze Another Product</button>
+  </div>);}
+
+function App(){
+  const [sc,setSc]=useState("home");const [q,sq]=useState("");const [d,sd]=useState(null);
+  const [err,se]=useState("");const [pg,spg]=useState(0);const [as,sas]=useState(0);
+  const [ds,sds]=useState([]);const [st,sst]=useState("");
+  const go=async()=>{
+    if(!q.trim())return;se("");setSc("loading");spg(0);sas(0);sds([]);sst(STEPS[0].label);
+    let c=0;const iv=setInterval(()=>{c++;sds(x=>[...x,c-1]);if(c<STEPS.length){sas(c);sst(STEPS[c].label);spg(Math.round((c/STEPS.length)*80));}else clearInterval(iv);},900);
+    try{const r=await callAI(q.trim());clearInterval(iv);sds([0,1,2,3,4,5]);spg(100);sst("Analysis complete! ✓");setTimeout(()=>{sd(r);setSc("results");},500);}
+    catch(e){clearInterval(iv);se("❌ "+(e.message||"Retry karo"));setSc("home");}
+  };
+  const back=()=>{setSc("home");sd(null);sq("");se("");};
+  return(<div className="app"><div className="noise"/><div className="gb"/>
+    {sc==="home"&&<Home q={q} sq={sq} go={go} err={err}/>}
+    {sc==="loading"&&<Loading product={q} prog={pg} ast={as} dst={ds} stat={st}/>}
+    {sc==="results"&&d&&<Results d={d} back={back}/>}
+  </div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
